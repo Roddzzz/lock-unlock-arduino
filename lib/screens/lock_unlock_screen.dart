@@ -20,7 +20,7 @@ class _LockScreenState extends State<LockScreen> {
         style: GoogleFonts.nunito(
           color: Provider.of<ThemeProvider>(context, listen: false)
               .appColors
-              .primaryTextColor,
+              .staticColorText,
           fontWeight: FontWeight.w600,
           fontSize: 14,
         ),
