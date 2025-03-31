@@ -1,33 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static Color appBarColor = Colors.blue;
-  static Color staticColorText = Colors.white;
-  static Color primaryTextColor = Colors.white;
-  static Color secondaryColorText = Colors.black;
-  static Color backgroundColor = Color(0xBFECECEC);
+  final bool isDarkMode;
 
-  //Login
-  static Color loginBox = Colors.white;
-
-  // Método para alterar as cores com base no dark mode
-  static void darkMode(bool isDarkMode) {
-    if (isDarkMode) {
-      // Cores para Dark Mode
-      appBarColor = Colors.blue.shade900;
-      primaryTextColor = Colors.black;
-      secondaryColorText = Colors.white;
-      backgroundColor = Color(0xFF1A1A1A);
-
-      loginBox = Color(0xFF242424);
-    } else {
-      // Cores para Light Mode
-      appBarColor = Colors.blue;
-      primaryTextColor = Colors.white;
-      secondaryColorText = Colors.black;
-      backgroundColor = Color(0xBFECECEC);
-
-      loginBox = Colors.white;
-    }
-  }
+  AppColors({required this.isDarkMode});
+  Color get staticColorText => Colors.white;
+  Color get appBarColor => isDarkMode ? Colors.blue.shade800 : Colors.blue;
+  Color get primaryTextColor => isDarkMode ? Colors.black : Colors.white;
+  Color get secondaryColorText => isDarkMode ? Colors.white : Colors.black;
+  Color get backgroundColor => isDarkMode ? Color(0xFF1A1A1A) : Color(0xBFECECEC);
+  Color get loginBox => isDarkMode ? Color(0xFF242424) : Colors.white;
 }
