@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_controllerUser.text.trim() != "" && _controllerPassword.text != "") {
       if (_controllerUser.text.trim() == "admin" &&
           _controllerPassword.text == "admin") {
-        Navigator.pushNamed(context, AppRoutes.lockUnlockScreen);
+        Navigator.pushNamed(context, 'hubManagementScreen');
         _controllerUser.clear();
         _controllerPassword.clear();
       } else {

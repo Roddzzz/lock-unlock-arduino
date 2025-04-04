@@ -9,8 +9,9 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> {
-  bool isLocked = true; // Estado do cadeado
-  bool _isLoading = false; // Estado do loader
+  bool isLocked = true;
+  bool _isLoading = false;
+  bool _isCooldown = false; // Estado de "esperando 10s"
 
   void _showSnackbar(BuildContext context, String message, bool success) {
     final snackBar = SnackBar(
@@ -18,9 +19,11 @@ class _LockScreenState extends State<LockScreen> {
         message,
         textAlign: TextAlign.center,
         style: GoogleFonts.nunito(
-          color: Provider.of<ThemeProvider>(context, listen: false)
-              .appColors
-              .staticColorText,
+          color:
+              Provider.of<ThemeProvider>(
+                context,
+                listen: false,
+              ).appColors.staticColorText,
           fontWeight: FontWeight.w600,
           fontSize: 14,
         ),
@@ -33,25 +36,40 @@ class _LockScreenState extends State<LockScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Future<void> _toggleLock(BuildContext context) async {
+  Future<void> _unlockGate(BuildContext context) async {
+    if (!isLocked || _isLoading || _isCooldown) return;
+
     setState(() {
       _isLoading = true;
     });
 
     await Future.delayed(Duration(seconds: 2));
 
-    bool success = true; // Altere para `false` para testar falha
+    bool success = true; //Retorno API
 
-    setState(() {
-      _isLoading = false;
-      if (success) {
-        isLocked = !isLocked;
-        _showSnackbar(context,
-            isLocked ? "Bloqueado com sucesso!" : "Desbloqueado com sucesso!", true);
-      } else {
-        _showSnackbar(context, "Falha ao realizar a ação!", false);
-      }
-    });
+    if (success) {
+      setState(() {
+        isLocked = false;
+        _isLoading = false;
+        _isCooldown = true;
+      });
+
+      _showSnackbar(context, "Desbloqueado com sucesso!", true);
+
+      await Future.delayed(Duration(seconds: 10));
+
+      setState(() {
+        isLocked = true;
+        _isCooldown = false;
+      });
+
+      _showSnackbar(context, "Tranca foi fechada automaticamente.", true);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      _showSnackbar(context, "Falha ao desbloquear!", false);
+    }
   }
 
   @override
@@ -89,10 +107,10 @@ class _LockScreenState extends State<LockScreen> {
           ),
         ],
       ),
+      backgroundColor: appColors.backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               "Garen Ga042",
@@ -104,7 +122,7 @@ class _LockScreenState extends State<LockScreen> {
             ),
             SizedBox(height: 20),
             GestureDetector(
-              onTap: _isLoading ? null : () => _toggleLock(context),
+              onTap: () => _unlockGate(context),
               child: Container(
                 width: 120,
                 height: 120,
@@ -120,24 +138,25 @@ class _LockScreenState extends State<LockScreen> {
                       child: ScaleTransition(scale: animation, child: child),
                     );
                   },
-                  child: _isLoading
-                      ? Center(
-                    child: CircularProgressIndicator(
-                      color: appColors.primaryTextColor,
-                    ),
-                  )
-                      : Icon(
-                    isLocked ? Icons.lock_outline : Icons.lock_open,
-                    key: ValueKey<bool>(isLocked),
-                    color: appColors.primaryTextColor,
-                    size: 50,
-                  ),
+                  child:
+                      _isLoading
+                          ? Center(
+                            child: CircularProgressIndicator(
+                              color: appColors.primaryTextColor,
+                            ),
+                          )
+                          : Icon(
+                            isLocked ? Icons.lock_outline : Icons.lock_open,
+                            key: ValueKey<bool>(isLocked),
+                            color: appColors.primaryTextColor,
+                            size: 50,
+                          ),
                 ),
               ),
             ),
             SizedBox(height: 20),
             Text(
-              "Toque para desbloquear ou bloquear",
+              _isCooldown ? "Tranca ainda aberta..." : "Toque para destrancar",
               textAlign: TextAlign.center,
               style: GoogleFonts.nunito(
                 fontSize: 14,
@@ -147,7 +166,6 @@ class _LockScreenState extends State<LockScreen> {
           ],
         ),
       ),
-      backgroundColor: appColors.backgroundColor,
     );
   }
 }
