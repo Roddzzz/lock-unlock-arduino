@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Lock Unlock Arduino',
-      initialRoute: 'loginScreen',
+      initialRoute: '/loginScreen',
       routes: AppRoutes.routes,
     );
   }

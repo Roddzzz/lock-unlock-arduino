@@ -9,11 +9,11 @@ import 'package:provider/provider.dart';
 class AppRoutes {
 
   static Map<String, WidgetBuilder> get routes => {
-    'loginScreen': (context) => MultiProvider(providers: [
+    '/loginScreen': (context) => MultiProvider(providers: [
       ChangeNotifierProvider(create: (ctx) => LoginScreenViewmodel()),
       ChangeNotifierProvider(create: (ctx) => ThemeProvider())
     ], child: LoginScreen()),
-    'hubManagementScreen' : (context) => HubScreen(),
-    'lockUnlockScreen': (context) => LockScreen(),
+    '/hubManagementScreen' : (context) => HubScreen(),
+    '/lockUnlockScreen': (context) => LockScreen(),
   };
 }
