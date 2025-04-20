@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:lock_unlock_gate/domain/entities/lock_entity.dart';
+import 'package:lock_unlock_gate/drivers/api/api_driver.dart';
 import 'package:lock_unlock_gate/services/component.dart';
 import 'package:lock_unlock_gate/services/database_service.dart';
 import 'package:lock_unlock_gate/services/injector.dart';
@@ -8,6 +9,7 @@ import 'package:lock_unlock_gate/services/injector.dart';
 class LocksModel extends Component {
 
   final DatabaseService _databaseService = Injector.instance.locate();
+  final ApiDriver _apiDriver = Injector.instance.locate();
 
   List<LockEntity> _locks = [];
 
@@ -35,10 +37,15 @@ class LocksModel extends Component {
   bool isLocked() => currentLock?.locked?? false;
 
   Future<bool> unlock() async {
-    await Future.delayed(Duration(seconds: 2));
-    currentLock?.locked = false;
+    if(currentLock == null) {
+      return false;
+    }
+    final result = await _apiDriver.unlockLock(currentLock!);
+    if(result) {
+      currentLock?.locked = false;
+    }
     lockBack();
-    return true;
+    return result;
   }
 
   Future<void> lockBack() async {
