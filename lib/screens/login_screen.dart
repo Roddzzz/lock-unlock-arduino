@@ -4,6 +4,7 @@ import 'package:lock_unlock_gate/viewmodels/login_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
+// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 

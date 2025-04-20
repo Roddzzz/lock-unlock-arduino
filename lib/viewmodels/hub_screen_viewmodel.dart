@@ -33,4 +33,8 @@ class HubScreenViewmodel extends ChangeNotifier {
   }
 
   List<LockEntity> get locks => _locksModel.locks;
+
+  void setViewingLock(LockEntity lock) {
+    _locksModel.currentLock = lock;
+  }
 }

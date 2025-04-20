@@ -105,7 +105,7 @@ class HubScreen extends StatelessWidget {
                   height: 155,
                   child: ElevatedButton(
                     onPressed:
-                        () => Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock),
+                        () => _viewSingleLock(context, lock),
                     style: ElevatedButton.styleFrom(
                       overlayColor: Colors.transparent,
                       backgroundColor: context.select(
@@ -203,5 +203,10 @@ class HubScreen extends StatelessWidget {
       Text("Erro ao carregar informações! Por favor tente novamente"),
       ElevatedButton(onPressed: () => context.read<HubScreenViewmodel>().queryLocks(), child: Text("Tentar novamente"))
     ];
+  }
+  
+  void _viewSingleLock(BuildContext context, LockEntity lock) {
+    context.read<HubScreenViewmodel>().setViewingLock(lock);
+    Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock);
   }
 }
