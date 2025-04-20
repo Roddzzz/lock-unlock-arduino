@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock_unlock_gate/domain/entities/lock_entity.dart';
 import 'package:provider/provider.dart';
 import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
@@ -77,6 +78,8 @@ class _LockScreenState extends State<LockScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final arguments = ModalRoute.of(context)!.settings.arguments as LockEntity;
+    print(arguments);
 
     return Scaffold(
       appBar: AppBar(

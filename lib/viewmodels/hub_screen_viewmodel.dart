@@ -7,6 +7,14 @@ import 'package:lock_unlock_gate/services/injector.dart';
 
 class HubScreenViewmodel extends ChangeNotifier {
 
+  HubScreenViewmodel() {
+    _setUp();
+  }
+
+  Future<void> _setUp() async {
+    await queryLocks();
+  }
+
   final LocksModel _locksModel = Injector.instance.locate();
   final AuthService _authService = Injector.instance.locate();
 

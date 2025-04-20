@@ -105,7 +105,7 @@ class HubScreen extends StatelessWidget {
                   height: 155,
                   child: ElevatedButton(
                     onPressed:
-                        () => Navigator.pushNamed(context, '/lockUnlockScreen'),
+                        () => Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock),
                     style: ElevatedButton.styleFrom(
                       overlayColor: Colors.transparent,
                       backgroundColor: context.select(
