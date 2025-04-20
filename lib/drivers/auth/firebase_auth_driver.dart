@@ -14,9 +14,14 @@ class FirebaseAuthDriver extends AuthDriver {
     try {
       _userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: '${username}@fachinis.com', password: password);
       return true;
-    } catch(error, stack_trace) {
+    } catch(_, _) {
       return false;
     }
+  }
+  
+  @override
+  String getUserId() {
+    return _userCredential?.user?.uid ?? "";
   }
 
 }

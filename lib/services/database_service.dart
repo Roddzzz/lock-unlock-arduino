@@ -9,5 +9,4 @@ class DatabaseService extends Service {
 
   Future<List<LockEntity>?> queryAllLocks(String userId) => _driver.queryAllLocks(userId);
 
-
 }

@@ -8,4 +8,6 @@ class AuthService extends Service {
 
 
   Future<bool> doLogin(String username, String password) => _driver.doLogin(username, password);
+
+  String getUserId() => _driver.getUserId();
 }

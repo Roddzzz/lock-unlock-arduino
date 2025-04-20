@@ -7,18 +7,19 @@ class LocksModel extends Component {
 
   final DatabaseService _databaseService = Injector.instance.locate();
 
-  List<LockEntity>? _locks;
+  List<LockEntity> _locks = [];
 
-  Future<List<LockEntity>?> _queryAllLocks(String userId) async {
-    return await _databaseService.queryAllLocks(userId);
-  }
+  List<LockEntity> get locks => _locks;
 
-  // view model só vai chamar este método. Se não tiver armazenado, busca da base.
-  // se estiver carregado mas o parâmetro force for passado ele tenta de novo na base, forçando a consulta
-  Future<List<LockEntity>?> getLocks(String userId, bool force) async {
-    if(_locks == null || force) {
-      await _queryAllLocks(userId);
+  Future<bool> queryAllLocks(String userId) async {
+    final result = await _databaseService.queryAllLocks(userId);
+    if(result == null) {
+      return false;
     }
-    return _locks;
+    _locks = result;
+    return true;
   }
+
+
+
 }
