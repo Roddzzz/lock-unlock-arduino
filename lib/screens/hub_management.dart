@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock_unlock_gate/domain/entities/lock_entity.dart';
+import 'package:lock_unlock_gate/domain/enums/loading_status.dart';
+import 'package:lock_unlock_gate/viewmodels/hub_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
@@ -47,8 +50,57 @@ class HubScreen extends StatelessWidget {
               spacing: 40, // Espaço horizontal entre os containers
               runSpacing: 20, // Espaço vertical entre as linhas
               alignment: WrapAlignment.center, // Centraliza horizontalmente
-              children: [
-                SizedBox(
+              children: _buildPageBody(context),
+            ),
+          ),
+        ),
+      ),
+      backgroundColor: context.select((ThemeProvider t) => t.backgroundColor),
+    );
+  }
+
+  List<Widget> _buildPageBody(BuildContext context) {
+    final status = context.select((HubScreenViewmodel v) => v.locksLoadingStatus);
+    if(status == LoadingStatus.SUCCESS) {
+      return _buildLockContainerList(context);
+    } else if(status == LoadingStatus.LOADING) {
+      return [
+        CircularProgressIndicator()
+      ];
+    }
+    return _buildErrorPageBody(context);
+  }
+
+  List<Widget> _buildLockContainerList(BuildContext context) {
+    final List<LockEntity> locks = context.select((HubScreenViewmodel h) => h.locks);
+    List<Widget> containers = [];
+    containers.addAll(locks.map((l) => _buildSingleLockContainer(context, l)));
+    containers.add(_buildAddLocksContainer(context));
+    return containers;
+  }
+
+  Widget _buildAddLocksContainer(BuildContext context) {
+    return Container(
+                  width: 155,
+                  height: 155,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                    color: context.select((ThemeProvider t) => t.loginBox),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      size: 30,
+                      color: context.select(
+                        (ThemeProvider t) => t.secondaryColorText,
+                      ),
+                    ),
+                  ),
+                );
+  }
+
+  Widget _buildSingleLockContainer(BuildContext context, LockEntity lock) {
+    return SizedBox(
                   width: 155,
                   height: 155,
                   child: ElevatedButton(
@@ -68,7 +120,7 @@ class HubScreen extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'Ga042',
+                        lock.name,
                         style: GoogleFonts.nunito(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -79,31 +131,7 @@ class HubScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  width: 155,
-                  height: 155,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                    color: context.select((ThemeProvider t) => t.loginBox),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 30,
-                      color: context.select(
-                        (ThemeProvider t) => t.secondaryColorText,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      backgroundColor: context.select((ThemeProvider t) => t.backgroundColor),
-    );
+                );
   }
 
   void _showExitDialog(BuildContext context) {
@@ -168,5 +196,12 @@ class HubScreen extends StatelessWidget {
       isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
       color: staticColorText,
     );
+  }
+  
+  List<Widget> _buildErrorPageBody(BuildContext context) {
+    return [
+      Text("Erro ao carregar informações! Por favor tente novamente"),
+      ElevatedButton(onPressed: () => context.read<HubScreenViewmodel>().queryLocks(), child: Text("Tentar novamente"))
+    ];
   }
 }
