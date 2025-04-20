@@ -251,7 +251,7 @@ class LoginScreen extends StatelessWidget {
     );
     if (success) {
       if (context.mounted) {
-        await Navigator.of(context).pushNamed('/hubManagementScreen');
+        await Navigator.of(context).popAndPushNamed('/hubManagementScreen');
         _userTextController.dispose();
         _passwordTextController.dispose();
         _userFocusNode.dispose();
