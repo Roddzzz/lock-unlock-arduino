@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock_unlock_gate/viewmodels/login_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lock_unlock_gate/models/theme_provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-  
+  LoginScreen({super.key});
+
+  final FocusNode _userFocusNode = FocusNode();
+  final TextEditingController _userTextController = TextEditingController();
+
+  final TextEditingController _passwordTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final appColors = themeProvider.appColors;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appColors.appBarColor,
+        backgroundColor: context.select(
+          (ThemeProvider t) => t.appColors.appBarColor,
+        ),
         title: Text(
           "Lock Unlock Arduino",
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w600,
-            color: appColors.staticColorText,
+            color: context.select(
+              (ThemeProvider t) => t.appColors.staticColorText,
+            ),
           ),
         ),
         centerTitle: true,
@@ -25,16 +33,8 @@ class LoginScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(right: 9.0),
             child: IconButton(
-              icon: Icon(
-                themeProvider.isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-                color: appColors.staticColorText,
-              ),
-              onPressed: () {
-                // Alternar o tema ao clicar no botão
-                themeProvider.toggleTheme();
-              },
+              icon: _buildDarkModeIcon(context),
+              onPressed: () => context.read<ThemeProvider>().toggleTheme(),
             ),
           ),
         ],
@@ -44,7 +44,7 @@ class LoginScreen extends StatelessWidget {
           width: 370,
           height: 550,
           decoration: BoxDecoration(
-            color: appColors.loginBox,
+            color: context.select((ThemeProvider t) => t.appColors.loginBox),
             borderRadius: BorderRadius.all(Radius.circular(14.0)),
           ),
           child: Column(
@@ -57,7 +57,9 @@ class LoginScreen extends StatelessWidget {
                   style: GoogleFonts.nunito(
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
-                    color: appColors.secondaryColorText,
+                    color: context.select(
+                      (ThemeProvider t) => t.appColors.secondaryColorText,
+                    ),
                   ),
                 ),
               ),
@@ -66,31 +68,43 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 300,
                   child: TextField(
-                    // onSubmitted: (_) => {_validateLogin()},
+                    onSubmitted:
+                        (_) =>
+                            _handleLoginValidation(context),
                     autofocus: true,
-                    // focusNode: _focusNodeUser,
-                    // controller: _controllerUser,
-                    cursorColor: appColors.appBarColor,
+                    focusNode: _userFocusNode,
+                    controller: _userTextController,
+                    cursorColor: context.select(
+                      (ThemeProvider t) => t.appColors.appBarColor,
+                    ),
                     style: GoogleFonts.nunito(
                       fontSize: 16,
-                      color: appColors.secondaryColorText,
+                      color: context.select(
+                        (ThemeProvider t) => t.appColors.secondaryColorText,
+                      ),
                     ),
                     decoration: InputDecoration(
                       labelText: 'Usuário',
                       labelStyle: GoogleFonts.nunito(
                         fontSize: 16,
-                        color: appColors.secondaryColorText,
+                        color: context.select(
+                          (ThemeProvider t) => t.appColors.secondaryColorText,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: appColors.secondaryColorText,
+                          color: context.select(
+                            (ThemeProvider t) => t.appColors.secondaryColorText,
+                          ),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: appColors.appBarColor,
+                          color: context.select(
+                            (ThemeProvider t) => t.appColors.appBarColor,
+                          ),
                           width: 2.0,
                         ),
                       ),
@@ -103,45 +117,67 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 300,
                   child: TextField(
-                    // onSubmitted: (_) => _validateLogin(),
-                    // controller: _controllerPassword,
-                    // obscureText: _isObscureText,
-                    cursorColor: appColors.appBarColor,
+                    onSubmitted:
+                        (_) =>
+                            _handleLoginValidation(context),
+                    controller: _passwordTextController,
+                    obscureText: context.select(
+                      (LoginScreenViewmodel l) => l.passwordFieldObscureText,
+                    ),
+                    cursorColor: context.select(
+                      (ThemeProvider t) => t.appColors.appBarColor,
+                    ),
                     style: GoogleFonts.nunito(
                       fontSize: 16,
-                      color: appColors.secondaryColorText,
+                      color: context.select(
+                        (ThemeProvider t) => t.appColors.secondaryColorText,
+                      ),
                     ),
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       labelStyle: GoogleFonts.nunito(
                         fontSize: 16,
-                        color: appColors.secondaryColorText,
+                        color: context.select(
+                          (ThemeProvider t) => t.appColors.secondaryColorText,
+                        ),
                       ),
                       suffixIcon: IconButton(
-                        icon: Icon(
-                          // _isObscureText
-                          //     ? Icons.visibility_off
-                          //     : Icons.visibility_outlined,
-                          Icons.visibility_off,
-                          color: appColors.secondaryColorText,
-                          size: 19,
+                        icon: Builder(
+                          builder: (BuildContext builderBuildContext) {
+                            final bool isObscureText = builderBuildContext
+                                .select(
+                                  (LoginScreenViewmodel l) =>
+                                      l.passwordFieldObscureText,
+                                );
+                            final Color color = builderBuildContext.select(
+                              (ThemeProvider t) =>
+                                  t.appColors.secondaryColorText,
+                            );
+                            return Icon(
+                              isObscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility_outlined,
+                              color: color,
+                              size: 19,
+                            );
+                          },
                         ),
-                        onPressed: () {
-                          // setState(() {
-                          //   _isObscureText = !_isObscureText;
-                          // });
-                        },
+                        onPressed: () => context.read<LoginScreenViewmodel>().toggleObscurePassword(),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: appColors.secondaryColorText,
+                          color: context.select(
+                            (ThemeProvider t) => t.appColors.secondaryColorText,
+                          ),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: appColors.appBarColor,
+                          color: context.select(
+                            (ThemeProvider t) => t.appColors.appBarColor,
+                          ),
                           width: 2.0,
                         ),
                       ),
@@ -159,7 +195,9 @@ class LoginScreen extends StatelessWidget {
                       style: GoogleFonts.nunito(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: appColors.appBarColor,
+                        color: context.select(
+                          (ThemeProvider t) => t.appColors.appBarColor,
+                        ),
                       ),
                     ),
                     SizedBox(width: 100),
@@ -168,7 +206,9 @@ class LoginScreen extends StatelessWidget {
                       style: GoogleFonts.nunito(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: appColors.appBarColor,
+                        color: context.select(
+                          (ThemeProvider t) => t.appColors.appBarColor,
+                        ),
                       ),
                     ),
                   ],
@@ -180,12 +220,12 @@ class LoginScreen extends StatelessWidget {
                   height: 48,
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // _validateLogin();
-                    },
+                    onPressed: () => _handleLoginValidation(context),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white, // Cor de fundo
-                      backgroundColor: appColors.appBarColor, // Cor do texto
+                      backgroundColor: context.select(
+                        (ThemeProvider t) => t.appColors.appBarColor,
+                      ), // Cor do texto
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -193,7 +233,7 @@ class LoginScreen extends StatelessWidget {
                     child: Text(
                       'Entrar',
                       style: GoogleFonts.nunito(fontSize: 16),
-                    )
+                    ),
                   ),
                 ),
               ),
@@ -201,45 +241,52 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: appColors.backgroundColor,
+      backgroundColor: context.select(
+        (ThemeProvider t) => t.appColors.backgroundColor,
+      ),
+    );
+  }
+
+  void _handleLoginValidation(BuildContext context) async {
+    final String username = _userTextController.text.trim();
+    final String password = _passwordTextController.text.trim();
+    if(username == "" || password == "") {
+      _showSnackbarInvalidLogin(context, 'Preencha todos os campos obrigatórios para Login');
+      return;
+    }
+    final success = await context.read<LoginScreenViewmodel>().validateLogin(username, password);
+    if(success) {
+      if(context.mounted) {
+        await Navigator.of(context).pushNamed('/hubManagementScreen');
+        _userTextController.dispose();
+        _passwordTextController.dispose();
+        _userFocusNode.dispose();
+        return;
+      }
+    }
+    if(context.mounted) {
+      _showSnackbarInvalidLogin(context, 'Usuário e/ou senha incorretos!');
+      _userTextController.clear();
+      _passwordTextController.clear();
+      _userFocusNode.requestFocus();
+    }
+  }
+  
+  Widget _buildDarkModeIcon(BuildContext context) {
+    final (darkMode, staticColorText) = context.select(
+      (ThemeProvider t) => (
+        t.isDarkMode,
+        t.appColors.staticColorText,
+      ),
+    );
+    return Icon(
+      darkMode
+          ? Icons.light_mode_outlined
+          : Icons.dark_mode_outlined,
+      color: staticColorText,
     );
   }
 }
-
-//   @override
-//   _LoginScreenState createState() => _LoginScreenState();
-// }
-
-// class _LoginScreenState extends State<LoginScreen> {
-//   bool _isObscureText = true;
-//   final TextEditingController _controllerUser = TextEditingController();
-//   final TextEditingController _controllerPassword = TextEditingController();
-//   final FocusNode _focusNodeUser = FocusNode();
-
-//   void _validateLogin() {
-//     if (_controllerUser.text.trim() != "" && _controllerPassword.text != "") {
-//       if (_controllerUser.text.trim() == "admin" &&
-//           _controllerPassword.text == "admin") {
-//         Navigator.pushNamed(context, 'hubManagementScreen');
-//         _controllerUser.clear();
-//         _controllerPassword.clear();
-//       } else {
-//         setState(() {
-//           _showSnackbarInvalidLogin(context, "Usuário ou senha incorretos");
-//         });
-//         _controllerUser.clear();
-//         _controllerPassword.clear();
-//         _focusNodeUser.requestFocus();
-//       }
-//     } else {
-//       setState(() {
-//         _showSnackbarInvalidLogin(
-//           context,
-//           "Preencha todos os campos obrigatórios para Login",
-//         );
-//       });
-//     }
-//   }
 
 //   @override
 //   void dispose() {
@@ -248,26 +295,26 @@ class LoginScreen extends StatelessWidget {
 //     super.dispose();
 //   }
 
-//   void _showSnackbarInvalidLogin(BuildContext context, String message) {
-//     final snackBar = SnackBar(
-//       content: Text(
-//         message,
-//         textAlign: TextAlign.center,
-//         style: GoogleFonts.nunito(
-//           color:
-//               Provider.of<ThemeProvider>(
-//                 context,
-//                 listen: false,
-//               ).appColors.staticColorText,
-//           fontWeight: FontWeight.w600,
-//           fontSize: 14,
-//         ),
-//       ),
-//       backgroundColor: Colors.red,
-//       behavior: SnackBarBehavior.floating,
-//       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-//       duration: Duration(seconds: 2),
-//     );
-//     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//   }
+  void _showSnackbarInvalidLogin(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.nunito(
+          color:
+              Provider.of<ThemeProvider>(
+                context,
+                listen: false,
+              ).appColors.staticColorText,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 // }
