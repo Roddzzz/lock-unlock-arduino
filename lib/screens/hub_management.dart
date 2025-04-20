@@ -3,94 +3,35 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
-class HubScreen extends StatefulWidget {
+class HubScreen extends StatelessWidget {
   const HubScreen({super.key});
 
   @override
-  createState() => _HubScreenState();
-}
-
-class _HubScreenState extends State<HubScreen> {
-  void _showExitDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final provider = Provider.of<ThemeProvider>(context);
-        return AlertDialog(
-          backgroundColor: provider.loginBox,
-          title: Align(
-            alignment: Alignment.topCenter,
-            child: Text(
-              "Deseja sair?",
-              style: GoogleFonts.nunito(fontSize: 16, color: provider.secondaryColorText),
-            ),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context), // Fecha o popup
-                  child: Text(
-                    "Cancelar",
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: provider.secondaryColorText
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Fecha o popup
-                    Navigator.pop(context); // Sai da tela
-                  },
-                  child: Text(
-                    "Sair",
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: themeProvider.appBarColor,
+        backgroundColor: context.select((ThemeProvider t) => t.appBarColor),
         title: Text(
           "Lock Unlock Arduino",
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w600,
-            color: themeProvider.staticColorText,
+            color: context.select((ThemeProvider t) => t.staticColorText),
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: themeProvider.staticColorText),
+          icon: Icon(
+            Icons.arrow_back,
+            color: context.select((ThemeProvider t) => t.staticColorText),
+          ),
           onPressed: () => _showExitDialog(context),
         ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 9.0),
             child: IconButton(
-              icon: Icon(
-                themeProvider.isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-                color: themeProvider.staticColorText,
-              ),
-              onPressed: () => themeProvider.toggleTheme(),
+              icon: _buildDarkModeIcon(context),
+              onPressed: () => context.read<ThemeProvider>().toggleTheme(),
             ),
           ),
         ],
@@ -112,10 +53,12 @@ class _HubScreenState extends State<HubScreen> {
                   height: 155,
                   child: ElevatedButton(
                     onPressed:
-                        () => Navigator.pushNamed(context, 'lockUnlockScreen'),
+                        () => Navigator.pushNamed(context, '/lockUnlockScreen'),
                     style: ElevatedButton.styleFrom(
                       overlayColor: Colors.transparent,
-                      backgroundColor: themeProvider.loginBox,
+                      backgroundColor: context.select(
+                        (ThemeProvider t) => t.loginBox,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14.0),
                       ),
@@ -129,7 +72,9 @@ class _HubScreenState extends State<HubScreen> {
                         style: GoogleFonts.nunito(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
-                          color: themeProvider.secondaryColorText,
+                          color: context.select(
+                            (ThemeProvider t) => t.secondaryColorText,
+                          ),
                         ),
                       ),
                     ),
@@ -140,13 +85,15 @@ class _HubScreenState extends State<HubScreen> {
                   height: 155,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                    color: themeProvider.loginBox,
+                    color: context.select((ThemeProvider t) => t.loginBox),
                   ),
                   child: Center(
                     child: Icon(
                       Icons.add,
                       size: 30,
-                      color: themeProvider.secondaryColorText,
+                      color: context.select(
+                        (ThemeProvider t) => t.secondaryColorText,
+                      ),
                     ),
                   ),
                 ),
@@ -155,7 +102,71 @@ class _HubScreenState extends State<HubScreen> {
           ),
         ),
       ),
-      backgroundColor: themeProvider.backgroundColor,
+      backgroundColor: context.select((ThemeProvider t) => t.backgroundColor),
+    );
+  }
+
+  void _showExitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final provider = Provider.of<ThemeProvider>(context);
+        return AlertDialog(
+          backgroundColor: provider.loginBox,
+          title: Align(
+            alignment: Alignment.topCenter,
+            child: Text(
+              "Deseja sair?",
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                color: provider.secondaryColorText,
+              ),
+            ),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context), // Fecha o popup
+                  child: Text(
+                    "Cancelar",
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: provider.secondaryColorText,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).popAndPushNamed('/loginScreen');
+                  },
+                  child: Text(
+                    "Sair",
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDarkModeIcon(BuildContext context) {
+    final (isDarkMode, staticColorText) = context.select(
+      (ThemeProvider t) => (t.isDarkMode, t.staticColorText),
+    );
+    return Icon(
+      isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+      color: staticColorText,
     );
   }
 }
