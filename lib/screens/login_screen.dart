@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lock_unlock_gate/viewmodels/login_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:lock_unlock_gate/models/theme_provider.dart';
+import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -20,14 +20,14 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: context.select(
-          (ThemeProvider t) => t.appColors.appBarColor,
+          (ThemeProvider t) => t.appBarColor,
         ),
         title: Text(
           "Lock Unlock Arduino",
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w600,
             color: context.select(
-              (ThemeProvider t) => t.appColors.staticColorText,
+              (ThemeProvider t) => t.staticColorText,
             ),
           ),
         ),
@@ -47,7 +47,7 @@ class LoginScreen extends StatelessWidget {
           width: 370,
           height: 550,
           decoration: BoxDecoration(
-            color: context.select((ThemeProvider t) => t.appColors.loginBox),
+            color: context.select((ThemeProvider t) => t.loginBox),
             borderRadius: BorderRadius.all(Radius.circular(14.0)),
           ),
           child: Column(
@@ -61,7 +61,7 @@ class LoginScreen extends StatelessWidget {
                     fontSize: 28,
                     fontWeight: FontWeight.w600,
                     color: context.select(
-                      (ThemeProvider t) => t.appColors.secondaryColorText,
+                      (ThemeProvider t) => t.secondaryColorText,
                     ),
                   ),
                 ),
@@ -76,12 +76,12 @@ class LoginScreen extends StatelessWidget {
                     focusNode: _userFocusNode,
                     controller: _userTextController,
                     cursorColor: context.select(
-                      (ThemeProvider t) => t.appColors.appBarColor,
+                      (ThemeProvider t) => t.appBarColor,
                     ),
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       color: context.select(
-                        (ThemeProvider t) => t.appColors.secondaryColorText,
+                        (ThemeProvider t) => t.secondaryColorText,
                       ),
                     ),
                     decoration: InputDecoration(
@@ -89,14 +89,14 @@ class LoginScreen extends StatelessWidget {
                       labelStyle: GoogleFonts.nunito(
                         fontSize: 16,
                         color: context.select(
-                          (ThemeProvider t) => t.appColors.secondaryColorText,
+                          (ThemeProvider t) => t.secondaryColorText,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
                           color: context.select(
-                            (ThemeProvider t) => t.appColors.secondaryColorText,
+                            (ThemeProvider t) => t.secondaryColorText,
                           ),
                         ),
                       ),
@@ -104,7 +104,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
                           color: context.select(
-                            (ThemeProvider t) => t.appColors.appBarColor,
+                            (ThemeProvider t) => t.appBarColor,
                           ),
                           width: 2.0,
                         ),
@@ -124,12 +124,12 @@ class LoginScreen extends StatelessWidget {
                       (LoginScreenViewmodel l) => l.passwordFieldObscureText,
                     ),
                     cursorColor: context.select(
-                      (ThemeProvider t) => t.appColors.appBarColor,
+                      (ThemeProvider t) => t.appBarColor,
                     ),
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       color: context.select(
-                        (ThemeProvider t) => t.appColors.secondaryColorText,
+                        (ThemeProvider t) => t.secondaryColorText,
                       ),
                     ),
                     decoration: InputDecoration(
@@ -137,7 +137,7 @@ class LoginScreen extends StatelessWidget {
                       labelStyle: GoogleFonts.nunito(
                         fontSize: 16,
                         color: context.select(
-                          (ThemeProvider t) => t.appColors.secondaryColorText,
+                          (ThemeProvider t) => t.secondaryColorText,
                         ),
                       ),
                       suffixIcon: IconButton(
@@ -150,7 +150,7 @@ class LoginScreen extends StatelessWidget {
                                 );
                             final Color color = builderBuildContext.select(
                               (ThemeProvider t) =>
-                                  t.appColors.secondaryColorText,
+                                  t.secondaryColorText,
                             );
                             return Icon(
                               isObscureText
@@ -171,7 +171,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
                           color: context.select(
-                            (ThemeProvider t) => t.appColors.secondaryColorText,
+                            (ThemeProvider t) => t.secondaryColorText,
                           ),
                         ),
                       ),
@@ -179,7 +179,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
                           color: context.select(
-                            (ThemeProvider t) => t.appColors.appBarColor,
+                            (ThemeProvider t) => t.appBarColor,
                           ),
                           width: 2.0,
                         ),
@@ -199,7 +199,7 @@ class LoginScreen extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: context.select(
-                          (ThemeProvider t) => t.appColors.appBarColor,
+                          (ThemeProvider t) => t.appBarColor,
                         ),
                       ),
                     ),
@@ -210,7 +210,7 @@ class LoginScreen extends StatelessWidget {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: context.select(
-                          (ThemeProvider t) => t.appColors.appBarColor,
+                          (ThemeProvider t) => t.appBarColor,
                         ),
                       ),
                     ),
@@ -230,7 +230,7 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
       backgroundColor: context.select(
-        (ThemeProvider t) => t.appColors.backgroundColor,
+        (ThemeProvider t) => t.backgroundColor,
       ),
     );
   }
@@ -268,7 +268,7 @@ class LoginScreen extends StatelessWidget {
 
   Widget _buildDarkModeIcon(BuildContext context) {
     final (darkMode, staticColorText) = context.select(
-      (ThemeProvider t) => (t.isDarkMode, t.appColors.staticColorText),
+      (ThemeProvider t) => (t.isDarkMode, t.staticColorText),
     );
     return Icon(
       darkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
@@ -293,7 +293,7 @@ class LoginScreen extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white, // Cor de fundo
           backgroundColor: context.select(
-            (ThemeProvider t) => t.appColors.appBarColor,
+            (ThemeProvider t) => t.appBarColor,
           ), // Cor do texto
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
@@ -323,7 +323,7 @@ void _showSnackbarInvalidLogin(BuildContext context, String message) {
             Provider.of<ThemeProvider>(
               context,
               listen: false,
-            ).appColors.staticColorText,
+            ).staticColorText,
         fontWeight: FontWeight.w600,
         fontSize: 14,
       ),

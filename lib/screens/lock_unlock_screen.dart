@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:lock_unlock_gate/models/theme_provider.dart';
+import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
 class LockScreen extends StatefulWidget {
+  const LockScreen({super.key});
+
   @override
   _LockScreenState createState() => _LockScreenState();
 }
@@ -23,7 +25,7 @@ class _LockScreenState extends State<LockScreen> {
               Provider.of<ThemeProvider>(
                 context,
                 listen: false,
-              ).appColors.staticColorText,
+              ).staticColorText,
           fontWeight: FontWeight.w600,
           fontSize: 14,
         ),
@@ -75,21 +77,20 @@ class _LockScreenState extends State<LockScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final appColors = themeProvider.appColors;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appColors.appBarColor,
+        backgroundColor: themeProvider.appBarColor,
         title: Text(
           "Lock Unlock Arduino",
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w600,
-            color: appColors.staticColorText,
+            color: themeProvider.staticColorText,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: appColors.staticColorText),
+          icon: Icon(Icons.arrow_back, color: themeProvider.staticColorText),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -100,14 +101,14 @@ class _LockScreenState extends State<LockScreen> {
                 themeProvider.isDarkMode
                     ? Icons.light_mode_outlined
                     : Icons.dark_mode_outlined,
-                color: appColors.staticColorText,
+                color: themeProvider.staticColorText,
               ),
               onPressed: () => themeProvider.toggleTheme(),
             ),
           ),
         ],
       ),
-      backgroundColor: appColors.backgroundColor,
+      backgroundColor: themeProvider.backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +118,7 @@ class _LockScreenState extends State<LockScreen> {
               style: GoogleFonts.nunito(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: appColors.secondaryColorText,
+                color: themeProvider.secondaryColorText,
               ),
             ),
             SizedBox(height: 20),
@@ -142,13 +143,13 @@ class _LockScreenState extends State<LockScreen> {
                       _isLoading
                           ? Center(
                             child: CircularProgressIndicator(
-                              color: appColors.primaryTextColor,
+                              color: themeProvider.primaryTextColor,
                             ),
                           )
                           : Icon(
                             isLocked ? Icons.lock_outline : Icons.lock_open,
                             key: ValueKey<bool>(isLocked),
-                            color: appColors.primaryTextColor,
+                            color: themeProvider.primaryTextColor,
                             size: 50,
                           ),
                 ),
@@ -160,7 +161,7 @@ class _LockScreenState extends State<LockScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.nunito(
                 fontSize: 14,
-                color: appColors.secondaryColorText,
+                color: themeProvider.secondaryColorText,
               ),
             ),
           ],

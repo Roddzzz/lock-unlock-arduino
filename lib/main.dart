@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';  // Importando o Provider
 import 'package:lock_unlock_gate/drivers/auth/firebase_auth_driver.dart';
 import 'package:lock_unlock_gate/models/auth_model.dart';
+import 'package:lock_unlock_gate/models/theme_model.dart';
 import 'package:lock_unlock_gate/services/auth_service.dart';
 import 'package:lock_unlock_gate/services/injector.dart';
 import 'app_routes.dart';  // Importando as rotas
@@ -12,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Injector.instance.addComponentInstance(ThemeModel());
   Injector.instance.addComponentInstance(FirebaseAuthDriver()); // se amanhã quiséssemos trocar o firebase por outro autenticador basta mudar aqui
   Injector.instance.addComponentInstance(AuthService()); // auth service precisa ser adicionado depois pois precisa do auth driver
   Injector.instance.addComponentInstance(AuthModel()); // auth model tem a inteligência de escolher se pergunta para o service ou se usa algo mockado

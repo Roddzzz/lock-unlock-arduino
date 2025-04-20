@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:lock_unlock_gate/models/theme_provider.dart';
+import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
 class HubScreen extends StatefulWidget {
   const HubScreen({super.key});
@@ -11,17 +11,18 @@ class HubScreen extends StatefulWidget {
 }
 
 class _HubScreenState extends State<HubScreen> {
-  void _showExitDialog(BuildContext context, appColors) {
+  void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final provider = Provider.of<ThemeProvider>(context);
         return AlertDialog(
-          backgroundColor: appColors.loginBox,
+          backgroundColor: provider.loginBox,
           title: Align(
             alignment: Alignment.topCenter,
             child: Text(
               "Deseja sair?",
-              style: GoogleFonts.nunito(fontSize: 16, color: appColors.secondaryColorText),
+              style: GoogleFonts.nunito(fontSize: 16, color: provider.secondaryColorText),
             ),
           ),
           actions: [
@@ -35,7 +36,7 @@ class _HubScreenState extends State<HubScreen> {
                     style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: appColors.secondaryColorText
+                      color: provider.secondaryColorText
                     ),
                   ),
                 ),
@@ -64,22 +65,20 @@ class _HubScreenState extends State<HubScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final appColors = themeProvider.appColors;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appColors.appBarColor,
+        backgroundColor: themeProvider.appBarColor,
         title: Text(
           "Lock Unlock Arduino",
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.w600,
-            color: appColors.staticColorText,
+            color: themeProvider.staticColorText,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: appColors.staticColorText),
-          onPressed: () => _showExitDialog(context, appColors),
+          icon: Icon(Icons.arrow_back, color: themeProvider.staticColorText),
+          onPressed: () => _showExitDialog(context),
         ),
         actions: [
           Padding(
@@ -89,7 +88,7 @@ class _HubScreenState extends State<HubScreen> {
                 themeProvider.isDarkMode
                     ? Icons.light_mode_outlined
                     : Icons.dark_mode_outlined,
-                color: appColors.staticColorText,
+                color: themeProvider.staticColorText,
               ),
               onPressed: () => themeProvider.toggleTheme(),
             ),
@@ -116,7 +115,7 @@ class _HubScreenState extends State<HubScreen> {
                         () => Navigator.pushNamed(context, 'lockUnlockScreen'),
                     style: ElevatedButton.styleFrom(
                       overlayColor: Colors.transparent,
-                      backgroundColor: appColors.loginBox,
+                      backgroundColor: themeProvider.loginBox,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14.0),
                       ),
@@ -130,7 +129,7 @@ class _HubScreenState extends State<HubScreen> {
                         style: GoogleFonts.nunito(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
-                          color: appColors.secondaryColorText,
+                          color: themeProvider.secondaryColorText,
                         ),
                       ),
                     ),
@@ -141,13 +140,13 @@ class _HubScreenState extends State<HubScreen> {
                   height: 155,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                    color: appColors.loginBox,
+                    color: themeProvider.loginBox,
                   ),
                   child: Center(
                     child: Icon(
                       Icons.add,
                       size: 30,
-                      color: appColors.secondaryColorText,
+                      color: themeProvider.secondaryColorText,
                     ),
                   ),
                 ),
@@ -156,7 +155,7 @@ class _HubScreenState extends State<HubScreen> {
           ),
         ),
       ),
-      backgroundColor: appColors.backgroundColor,
+      backgroundColor: themeProvider.backgroundColor,
     );
   }
 }
