@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';  // Importando o Provider
-import 'package:lock_unlock_gate/drivers/api/api_driver.dart';
 import 'package:lock_unlock_gate/drivers/api/cloud_functions_api_driver.dart';
 import 'package:lock_unlock_gate/drivers/api/mappers/api_request_response_mapper.dart';
 import 'package:lock_unlock_gate/drivers/auth/firebase_auth_driver.dart';
