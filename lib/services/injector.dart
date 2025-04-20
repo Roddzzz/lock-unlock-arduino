@@ -1,4 +1,4 @@
-import 'package:lock_unlock_gate/services/service.dart';
+import 'package:lock_unlock_gate/services/component.dart';
 
 class Injector {
 
@@ -14,14 +14,14 @@ class Injector {
   // fim da crianção do singleton
 
 
-  final Set<Service> _services = {};
+  final Set<Component> _components = {};
 
-  void addServiceInstance(Service s) {
-    _services.add(s);
+  void addComponentInstance(Component s) {
+    _components.add(s);
   }
 
-  T locate<T extends Service>() {
-    return _services.whereType<T>().first;
+  T locate<T extends Component>() {
+    return _components.whereType<T>().first;
   }
 
 
