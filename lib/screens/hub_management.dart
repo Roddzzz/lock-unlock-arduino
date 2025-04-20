@@ -1,27 +1,154 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lock_unlock_gate/domain/entities/lock_entity.dart';
+import 'package:lock_unlock_gate/domain/enums/loading_status.dart';
+import 'package:lock_unlock_gate/viewmodels/hub_screen_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:lock_unlock_gate/models/theme_provider.dart';
+import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 
-class HubScreen extends StatefulWidget {
+class HubScreen extends StatelessWidget {
   const HubScreen({super.key});
 
   @override
-  createState() => _HubScreenState();
-}
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: context.select((ThemeProvider t) => t.appBarColor),
+        title: Text(
+          "Lock Unlock Arduino",
+          style: GoogleFonts.nunito(
+            fontWeight: FontWeight.w600,
+            color: context.select((ThemeProvider t) => t.staticColorText),
+          ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: context.select((ThemeProvider t) => t.staticColorText),
+          ),
+          onPressed: () => _showExitDialog(context),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 9.0),
+            child: IconButton(
+              icon: _buildDarkModeIcon(context),
+              onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+            ),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: 550,
+            height: 200,
+            child: Wrap(
+              spacing: 40, // Espaço horizontal entre os containers
+              runSpacing: 20, // Espaço vertical entre as linhas
+              alignment: WrapAlignment.center, // Centraliza horizontalmente
+              children: _buildPageBody(context),
+            ),
+          ),
+        ),
+      ),
+      backgroundColor: context.select((ThemeProvider t) => t.backgroundColor),
+    );
+  }
 
-class _HubScreenState extends State<HubScreen> {
-  void _showExitDialog(BuildContext context, appColors) {
+  List<Widget> _buildPageBody(BuildContext context) {
+    final status = context.select((HubScreenViewmodel v) => v.locksLoadingStatus);
+    if(status == LoadingStatus.SUCCESS) {
+      return _buildLockContainerList(context);
+    } else if(status == LoadingStatus.LOADING) {
+      return [
+        CircularProgressIndicator()
+      ];
+    }
+    return _buildErrorPageBody(context);
+  }
+
+  List<Widget> _buildLockContainerList(BuildContext context) {
+    final List<LockEntity> locks = context.select((HubScreenViewmodel h) => h.locks);
+    List<Widget> containers = [];
+    containers.addAll(locks.map((l) => _buildSingleLockContainer(context, l)));
+    containers.add(_buildAddLocksContainer(context));
+    return containers;
+  }
+
+  Widget _buildAddLocksContainer(BuildContext context) {
+    return Container(
+                  width: 155,
+                  height: 155,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                    color: context.select((ThemeProvider t) => t.loginBox),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.add,
+                      size: 30,
+                      color: context.select(
+                        (ThemeProvider t) => t.secondaryColorText,
+                      ),
+                    ),
+                  ),
+                );
+  }
+
+  Widget _buildSingleLockContainer(BuildContext context, LockEntity lock) {
+    return SizedBox(
+                  width: 155,
+                  height: 155,
+                  child: ElevatedButton(
+                    onPressed:
+                        () => _viewSingleLock(context, lock),
+                    style: ElevatedButton.styleFrom(
+                      overlayColor: Colors.transparent,
+                      backgroundColor: context.select(
+                        (ThemeProvider t) => t.loginBox,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.0),
+                      ),
+                      padding: EdgeInsets.zero,
+                      // Remove padding interno extra
+                      elevation: 0, // Sem sombra, igual ao Container
+                    ),
+                    child: Center(
+                      child: Text(
+                        lock.name,
+                        style: GoogleFonts.nunito(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: context.select(
+                            (ThemeProvider t) => t.secondaryColorText,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+  }
+
+  void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final provider = Provider.of<ThemeProvider>(context);
         return AlertDialog(
-          backgroundColor: appColors.loginBox,
+          backgroundColor: provider.loginBox,
           title: Align(
             alignment: Alignment.topCenter,
             child: Text(
               "Deseja sair?",
-              style: GoogleFonts.nunito(fontSize: 16, color: appColors.secondaryColorText),
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                color: provider.secondaryColorText,
+              ),
             ),
           ),
           actions: [
@@ -35,14 +162,14 @@ class _HubScreenState extends State<HubScreen> {
                     style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: appColors.secondaryColorText
+                      color: provider.secondaryColorText,
                     ),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Fecha o popup
-                    Navigator.pop(context); // Sai da tela
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).popAndPushNamed('/loginScreen');
                   },
                   child: Text(
                     "Sair",
@@ -61,102 +188,25 @@ class _HubScreenState extends State<HubScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final appColors = themeProvider.appColors;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: appColors.appBarColor,
-        title: Text(
-          "Lock Unlock Arduino",
-          style: GoogleFonts.nunito(
-            fontWeight: FontWeight.w600,
-            color: appColors.staticColorText,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: appColors.staticColorText),
-          onPressed: () => _showExitDialog(context, appColors),
-        ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 9.0),
-            child: IconButton(
-              icon: Icon(
-                themeProvider.isDarkMode
-                    ? Icons.light_mode_outlined
-                    : Icons.dark_mode_outlined,
-                color: appColors.staticColorText,
-              ),
-              onPressed: () => themeProvider.toggleTheme(),
-            ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: SizedBox(
-            width: 550,
-            height: 200,
-            child: Wrap(
-              spacing: 40, // Espaço horizontal entre os containers
-              runSpacing: 20, // Espaço vertical entre as linhas
-              alignment: WrapAlignment.center, // Centraliza horizontalmente
-              children: [
-                SizedBox(
-                  width: 155,
-                  height: 155,
-                  child: ElevatedButton(
-                    onPressed:
-                        () => Navigator.pushNamed(context, 'lockUnlockScreen'),
-                    style: ElevatedButton.styleFrom(
-                      overlayColor: Colors.transparent,
-                      backgroundColor: appColors.loginBox,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14.0),
-                      ),
-                      padding: EdgeInsets.zero,
-                      // Remove padding interno extra
-                      elevation: 0, // Sem sombra, igual ao Container
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Ga042',
-                        style: GoogleFonts.nunito(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: appColors.secondaryColorText,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 155,
-                  height: 155,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                    color: appColors.loginBox,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 30,
-                      color: appColors.secondaryColorText,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      backgroundColor: appColors.backgroundColor,
+  Widget _buildDarkModeIcon(BuildContext context) {
+    final (isDarkMode, staticColorText) = context.select(
+      (ThemeProvider t) => (t.isDarkMode, t.staticColorText),
     );
+    return Icon(
+      isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+      color: staticColorText,
+    );
+  }
+  
+  List<Widget> _buildErrorPageBody(BuildContext context) {
+    return [
+      Text("Erro ao carregar informações! Por favor tente novamente"),
+      ElevatedButton(onPressed: () => context.read<HubScreenViewmodel>().queryLocks(), child: Text("Tentar novamente"))
+    ];
+  }
+  
+  void _viewSingleLock(BuildContext context, LockEntity lock) {
+    context.read<HubScreenViewmodel>().setViewingLock(lock);
+    Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock);
   }
 }
