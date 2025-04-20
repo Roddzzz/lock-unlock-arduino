@@ -222,7 +222,7 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   height: 48,
                   width: 300,
-                  child: _buildAndInitializeLoginButton(context),
+                  child: AnimatedSwitcher(duration: const Duration(milliseconds: 300), transitionBuilder: (Widget w, Animation<double> a) => ScaleTransition(scale: a, child: w), child: _buildAndInitializeLoginButton(context)),
                 ),
               ),
             ],
