@@ -12,6 +12,9 @@ class LoginScreen extends StatelessWidget {
 
   final TextEditingController _passwordTextController = TextEditingController();
 
+  Widget?
+  _loginButtonWidget; // Inicializado tardiamente pois aqui ficam as animações do botão de login enquanto espera resposta da API
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,9 +71,7 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 300,
                   child: TextField(
-                    onSubmitted:
-                        (_) =>
-                            _handleLoginValidation(context),
+                    onSubmitted: (_) => _handleLoginValidation(context),
                     autofocus: true,
                     focusNode: _userFocusNode,
                     controller: _userTextController,
@@ -117,9 +118,7 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 300,
                   child: TextField(
-                    onSubmitted:
-                        (_) =>
-                            _handleLoginValidation(context),
+                    onSubmitted: (_) => _handleLoginValidation(context),
                     controller: _passwordTextController,
                     obscureText: context.select(
                       (LoginScreenViewmodel l) => l.passwordFieldObscureText,
@@ -162,7 +161,11 @@ class LoginScreen extends StatelessWidget {
                             );
                           },
                         ),
-                        onPressed: () => context.read<LoginScreenViewmodel>().toggleObscurePassword(),
+                        onPressed:
+                            () =>
+                                context
+                                    .read<LoginScreenViewmodel>()
+                                    .toggleObscurePassword(),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -219,22 +222,7 @@ class LoginScreen extends StatelessWidget {
                 child: SizedBox(
                   height: 48,
                   width: 300,
-                  child: ElevatedButton(
-                    onPressed: () => _handleLoginValidation(context),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, // Cor de fundo
-                      backgroundColor: context.select(
-                        (ThemeProvider t) => t.appColors.appBarColor,
-                      ), // Cor do texto
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Text(
-                      'Entrar',
-                      style: GoogleFonts.nunito(fontSize: 16),
-                    ),
-                  ),
+                  child: _buildAndInitializeLoginButton(context),
                 ),
               ),
             ],
@@ -250,13 +238,19 @@ class LoginScreen extends StatelessWidget {
   void _handleLoginValidation(BuildContext context) async {
     final String username = _userTextController.text.trim();
     final String password = _passwordTextController.text.trim();
-    if(username == "" || password == "") {
-      _showSnackbarInvalidLogin(context, 'Preencha todos os campos obrigatórios para Login');
+    if (username == "" || password == "") {
+      _showSnackbarInvalidLogin(
+        context,
+        'Preencha todos os campos obrigatórios para Login',
+      );
       return;
     }
-    final success = await context.read<LoginScreenViewmodel>().validateLogin(username, password);
-    if(success) {
-      if(context.mounted) {
+    final success = await context.read<LoginScreenViewmodel>().validateLogin(
+      username,
+      password,
+    );
+    if (success) {
+      if (context.mounted) {
         await Navigator.of(context).pushNamed('/hubManagementScreen');
         _userTextController.dispose();
         _passwordTextController.dispose();
@@ -264,27 +258,51 @@ class LoginScreen extends StatelessWidget {
         return;
       }
     }
-    if(context.mounted) {
+    if (context.mounted) {
       _showSnackbarInvalidLogin(context, 'Usuário e/ou senha incorretos!');
       _userTextController.clear();
       _passwordTextController.clear();
       _userFocusNode.requestFocus();
     }
   }
-  
+
   Widget _buildDarkModeIcon(BuildContext context) {
     final (darkMode, staticColorText) = context.select(
-      (ThemeProvider t) => (
-        t.isDarkMode,
-        t.appColors.staticColorText,
-      ),
+      (ThemeProvider t) => (t.isDarkMode, t.appColors.staticColorText),
     );
     return Icon(
-      darkMode
-          ? Icons.light_mode_outlined
-          : Icons.dark_mode_outlined,
+      darkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
       color: staticColorText,
     );
+  }
+
+  Widget _buildAndInitializeLoginButton(BuildContext context) {
+    final bool loginButtonLoading = context.select(
+      (LoginScreenViewmodel l) => l.loginButtonLoading,
+    );
+    if (loginButtonLoading) {
+      _loginButtonWidget = Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator()
+        ],
+      );
+    } else {
+      _loginButtonWidget = ElevatedButton(
+        onPressed: () => _handleLoginValidation(context),
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white, // Cor de fundo
+          backgroundColor: context.select(
+            (ThemeProvider t) => t.appColors.appBarColor,
+          ), // Cor do texto
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        child: Text('Entrar', style: GoogleFonts.nunito(fontSize: 16)),
+      );
+    }
+    return _loginButtonWidget!;
   }
 }
 
@@ -295,26 +313,27 @@ class LoginScreen extends StatelessWidget {
 //     super.dispose();
 //   }
 
-  void _showSnackbarInvalidLogin(BuildContext context, String message) {
-    final snackBar = SnackBar(
-      content: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.nunito(
-          color:
-              Provider.of<ThemeProvider>(
-                context,
-                listen: false,
-              ).appColors.staticColorText,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
+void _showSnackbarInvalidLogin(BuildContext context, String message) {
+  final snackBar = SnackBar(
+    content: Text(
+      message,
+      textAlign: TextAlign.center,
+      style: GoogleFonts.nunito(
+        color:
+            Provider.of<ThemeProvider>(
+              context,
+              listen: false,
+            ).appColors.staticColorText,
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
       ),
-      backgroundColor: Colors.red,
-      behavior: SnackBarBehavior.floating,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+    ),
+    backgroundColor: Colors.red,
+    behavior: SnackBarBehavior.floating,
+    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    duration: Duration(seconds: 2),
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
 // }
