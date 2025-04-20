@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "242834962589",
+    "project_id": "lock-unlock-arduino",
+    "storage_bucket": "lock-unlock-arduino.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242834962589:android:10c758a2b01c73a4377c74",
+        "android_client_info": {
+          "package_name": "com.example.lock_unlock_gate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDXWplH1OfsZ5Jb8dCQJpSn2l_OO2ZLwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
