@@ -22,13 +22,9 @@ class HubScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: context.select((ThemeProvider t) => t.staticColorText),
-          ),
-          onPressed: () => _showExitDialog(context),
-        ),
+        leading: IconButton(onPressed: () => {}, icon: Icon(
+          Icons.menu
+        )),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 9.0),
@@ -37,6 +33,13 @@ class HubScreen extends StatelessWidget {
               onPressed: () => context.read<ThemeProvider>().toggleTheme(),
             ),
           ),
+          IconButton(
+          icon: Icon(
+            Icons.exit_to_app,
+            color: context.select((ThemeProvider t) => t.staticColorText),
+          ),
+          onPressed: () => _showExitDialog(context),
+        )
         ],
       ),
       body: Padding(
@@ -137,7 +140,7 @@ class HubScreen extends StatelessWidget {
   void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext innerContext) {
         final provider = Provider.of<ThemeProvider>(context);
         return AlertDialog(
           backgroundColor: provider.loginBox,
