@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lock_unlock_gate/screens/access_log_screen.dart';
+import 'package:lock_unlock_gate/viewmodels/access_log_screen_viewmodel.dart';
 import 'package:lock_unlock_gate/viewmodels/theme_provider.dart';
 import 'package:lock_unlock_gate/screens/hub_management.dart';
 import 'package:lock_unlock_gate/screens/lock_unlock_screen.dart';
@@ -33,5 +35,16 @@ class AppRoutes {
       ],
       child: LockScreen(),
     ),
+    '/accessLogScreen': (context) => MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => AccessLogScreenViewmodel(),
+        )
+      ],
+      child: AccessLogScreen(),
+    )
   };
 }
