@@ -1,3 +1,4 @@
+import 'package:lock_unlock_gate/domain/entities/access_log_entity.dart';
 import 'package:lock_unlock_gate/domain/entities/lock_entity.dart';
 import 'package:lock_unlock_gate/drivers/database/database_driver.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,16 @@ class FirebaseDatabaseDriver extends DatabaseDriver {
     try {
       final queryResult = await _instance.collection('users').doc(userId).collection('locks').get();
       return queryResult.docs.where((e) => e.exists).map((e2) => _mapper.fromJsonToLockEntity(e2.data())).toList();
+    } catch(_, _) {
+      return null;
+    }
+  }
+
+  @override
+  Future<List<AccessLogEntity>?> queryUnlockAccessLogs() async {
+    try {
+      final queryResult = await _instance.collection('access_logs').get();
+      return queryResult.docs.map((e) => _mapper.fromJsonToAccessLogEntity(e.data())).whereType<AccessLogEntity>().toList();
     } catch(_, _) {
       return null;
     }

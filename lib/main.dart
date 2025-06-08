@@ -5,6 +5,7 @@ import 'package:lock_unlock_gate/drivers/auth/firebase_auth_driver.dart';
 import 'package:lock_unlock_gate/drivers/database/firebase_database_driver.dart';
 import 'package:lock_unlock_gate/drivers/database/mappers/firebase_database_object_mapper_driver.dart';
 import 'package:lock_unlock_gate/models/auth_model.dart';
+import 'package:lock_unlock_gate/models/lock_access_log_model.dart';
 import 'package:lock_unlock_gate/models/locks_model.dart';
 import 'package:lock_unlock_gate/models/theme_model.dart';
 import 'package:lock_unlock_gate/services/api_service.dart';
@@ -31,6 +32,7 @@ void main() async {
   Injector.instance.addComponentInstance(CloudFunctionsApiDriver());
   Injector.instance.addComponentInstance(ApiService());
   Injector.instance.addComponentInstance(LocksModel());
+  Injector.instance.addComponentInstance(LockAccessLogModel());
   // opcionalmente poderíamos criar um factory para instanciar, injetar e deixar disponíveis todos esses beans
   runApp(const MyApp());
 }
