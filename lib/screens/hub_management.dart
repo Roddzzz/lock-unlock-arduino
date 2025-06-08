@@ -257,11 +257,10 @@ class HubScreen extends StatelessWidget {
   
   Widget buildDrawerItems(BuildContext context) {
     ThemeProvider t = context.watch<ThemeProvider>();
-    return ListView.separated(
+    return ListView.builder(
           itemCount: 2,
           padding: EdgeInsets.zero,
-          separatorBuilder: (innerContext, index) => Divider(height: 0, thickness: 0, color: Colors.transparent,),
-          itemBuilder: (innerContext, index) => buildDrawerItem(index, t, innerContext),
+            itemBuilder: (innerContext, index) => buildDrawerItem(index, t, innerContext),
         );
   }
 }
