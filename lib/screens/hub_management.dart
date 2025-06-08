@@ -22,9 +22,7 @@ class HubScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(onPressed: () => {}, icon: Icon(
-          Icons.menu
-        )),
+        leading: buildDrawerMenuIcon(context),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 9.0),
@@ -34,13 +32,23 @@ class HubScreen extends StatelessWidget {
             ),
           ),
           IconButton(
-          icon: Icon(
-            Icons.exit_to_app,
-            color: context.select((ThemeProvider t) => t.staticColorText),
+            icon: Icon(
+              Icons.exit_to_app,
+              color: context.select((ThemeProvider t) => t.staticColorText),
+            ),
+            onPressed: () => _showExitDialog(context),
           ),
-          onPressed: () => _showExitDialog(context),
-        )
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const DrawerHeader(
+              child: Text("Menu"),
+              decoration: BoxDecoration(color: Colors.amber),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -63,19 +71,21 @@ class HubScreen extends StatelessWidget {
   }
 
   List<Widget> _buildPageBody(BuildContext context) {
-    final status = context.select((HubScreenViewmodel v) => v.locksLoadingStatus);
-    if(status == LoadingStatus.SUCCESS) {
+    final status = context.select(
+      (HubScreenViewmodel v) => v.locksLoadingStatus,
+    );
+    if (status == LoadingStatus.SUCCESS) {
       return _buildLockContainerList(context);
-    } else if(status == LoadingStatus.LOADING) {
-      return [
-        CircularProgressIndicator()
-      ];
+    } else if (status == LoadingStatus.LOADING) {
+      return [CircularProgressIndicator()];
     }
     return _buildErrorPageBody(context);
   }
 
   List<Widget> _buildLockContainerList(BuildContext context) {
-    final List<LockEntity> locks = context.select((HubScreenViewmodel h) => h.locks);
+    final List<LockEntity> locks = context.select(
+      (HubScreenViewmodel h) => h.locks,
+    );
     List<Widget> containers = [];
     containers.addAll(locks.map((l) => _buildSingleLockContainer(context, l)));
     containers.add(_buildAddLocksContainer(context));
@@ -84,57 +94,50 @@ class HubScreen extends StatelessWidget {
 
   Widget _buildAddLocksContainer(BuildContext context) {
     return Container(
-                  width: 155,
-                  height: 155,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                    color: context.select((ThemeProvider t) => t.loginBox),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 30,
-                      color: context.select(
-                        (ThemeProvider t) => t.secondaryColorText,
-                      ),
-                    ),
-                  ),
-                );
+      width: 155,
+      height: 155,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(14.0)),
+        color: context.select((ThemeProvider t) => t.loginBox),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.add,
+          size: 30,
+          color: context.select((ThemeProvider t) => t.secondaryColorText),
+        ),
+      ),
+    );
   }
 
   Widget _buildSingleLockContainer(BuildContext context, LockEntity lock) {
     return SizedBox(
-                  width: 155,
-                  height: 155,
-                  child: ElevatedButton(
-                    onPressed:
-                        () => _viewSingleLock(context, lock),
-                    style: ElevatedButton.styleFrom(
-                      overlayColor: Colors.transparent,
-                      backgroundColor: context.select(
-                        (ThemeProvider t) => t.loginBox,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14.0),
-                      ),
-                      padding: EdgeInsets.zero,
-                      // Remove padding interno extra
-                      elevation: 0, // Sem sombra, igual ao Container
-                    ),
-                    child: Center(
-                      child: Text(
-                        lock.name,
-                        style: GoogleFonts.nunito(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: context.select(
-                            (ThemeProvider t) => t.secondaryColorText,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+      width: 155,
+      height: 155,
+      child: ElevatedButton(
+        onPressed: () => _viewSingleLock(context, lock),
+        style: ElevatedButton.styleFrom(
+          overlayColor: Colors.transparent,
+          backgroundColor: context.select((ThemeProvider t) => t.loginBox),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.0),
+          ),
+          padding: EdgeInsets.zero,
+          // Remove padding interno extra
+          elevation: 0, // Sem sombra, igual ao Container
+        ),
+        child: Center(
+          child: Text(
+            lock.name,
+            style: GoogleFonts.nunito(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: context.select((ThemeProvider t) => t.secondaryColorText),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   void _showExitDialog(BuildContext context) {
@@ -200,16 +203,30 @@ class HubScreen extends StatelessWidget {
       color: staticColorText,
     );
   }
-  
+
   List<Widget> _buildErrorPageBody(BuildContext context) {
     return [
       Text("Erro ao carregar informações! Por favor tente novamente"),
-      ElevatedButton(onPressed: () => context.read<HubScreenViewmodel>().queryLocks(), child: Text("Tentar novamente"))
+      ElevatedButton(
+        onPressed: () => context.read<HubScreenViewmodel>().queryLocks(),
+        child: Text("Tentar novamente"),
+      ),
     ];
   }
-  
+
   void _viewSingleLock(BuildContext context, LockEntity lock) {
     context.read<HubScreenViewmodel>().setViewingLock(lock);
     Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock);
+  }
+  
+  Widget buildDrawerMenuIcon(BuildContext context) {
+    Color c = context.select((ThemeProvider t) => t.staticColorText);
+    return Builder(
+          builder:
+              (innerctx) => IconButton(
+                onPressed: () => Scaffold.of(innerctx).openDrawer(),
+                icon: Icon(Icons.menu, color: c),
+              ),
+        );
   }
 }
