@@ -41,14 +41,7 @@ class HubScreen extends StatelessWidget {
         ],
       ),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            const DrawerHeader(
-              child: Text("Menu"),
-              decoration: BoxDecoration(color: Colors.amber),
-            ),
-          ],
-        ),
+        child: buildDrawerItems(context),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -218,15 +211,57 @@ class HubScreen extends StatelessWidget {
     context.read<HubScreenViewmodel>().setViewingLock(lock);
     Navigator.pushNamed(context, '/lockUnlockScreen', arguments: lock);
   }
-  
+
   Widget buildDrawerMenuIcon(BuildContext context) {
     Color c = context.select((ThemeProvider t) => t.staticColorText);
     return Builder(
-          builder:
-              (innerctx) => IconButton(
-                onPressed: () => Scaffold.of(innerctx).openDrawer(),
-                icon: Icon(Icons.menu, color: c),
+      builder:
+          (innerctx) => IconButton(
+            onPressed: () => Scaffold.of(innerctx).openDrawer(),
+            icon: Icon(Icons.menu, color: c),
+          ),
+    );
+  }
+  
+  Widget buildDrawerItem(int index, ThemeProvider t, BuildContext context) {
+    switch (index) {
+      case 0:
+        return DrawerHeader(
+              margin: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: t.backgroundColor,
               ),
+              child: Text(
+                "Menu",
+                style: TextStyle(
+                  color: t.secondaryColorText,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+      case 1:
+        return ListTile(
+              tileColor: t.loginBox,
+              title: Text(
+                "Logs de acesso",
+                style: TextStyle(
+                  color: t.secondaryColorText,
+                ),
+              ),
+              onTap: () => Navigator.of(context).pushNamed('/accessLogScreen'),
+            );
+      default:
+        return SizedBox();
+    }
+  }
+  
+  Widget buildDrawerItems(BuildContext context) {
+    ThemeProvider t = context.watch<ThemeProvider>();
+    return ListView.separated(
+          itemCount: 2,
+          padding: EdgeInsets.zero,
+          separatorBuilder: (innerContext, index) => Divider(height: 0, thickness: 0, color: Colors.transparent,),
+          itemBuilder: (innerContext, index) => buildDrawerItem(index, t, innerContext),
         );
   }
 }
