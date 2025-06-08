@@ -27,6 +27,7 @@ class AccessLogScreenViewmodel extends ChangeNotifier {
     notifyListeners();
     bool success = await _model.queryLogs();
     if (success) {
+      _model.sortLogsByTimestamp();
       _loadingStatus = LoadingStatus.SUCCESS;
     } else {
       _loadingStatus = LoadingStatus.ERROR;

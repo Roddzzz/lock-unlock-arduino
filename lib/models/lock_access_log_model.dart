@@ -19,4 +19,8 @@ class LockAccessLogModel extends Component {
     _accessLogs = result;
     return true;
   }
+
+  void sortLogsByTimestamp() {
+    _accessLogs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  }
 }
