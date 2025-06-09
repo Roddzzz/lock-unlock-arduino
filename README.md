@@ -13,7 +13,7 @@ Este sistema foi desenvolvido para a disciplina **Robôs Móveis e Inteligentes*
 - Dart
 - Arduino
 - AWS
-
+- GCP
 
 ## 🔗 Repositórios relacionados
 
