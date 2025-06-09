@@ -6,24 +6,36 @@ O principal objetivo é aplicar conceitos de **robótica móvel e inteligente**,
 
 Este sistema foi desenvolvido para a disciplina **Robôs Móveis e Inteligentes**.
 
+
 ## 💻 Tecnologias utilizadas
 
 - Flutter
 - Dart
 - Arduino
 - AWS
-  
+
+
+## 🔗 Repositórios relacionados
+
+Este projeto faz parte de um ecossistema com múltiplos repositórios. Confira também:
+
+- 🟡 [**controle-acesso-aws-infrastructure**](https://github.com/seu-usuario/controle-acesso-aws-infrastructure)
+- 🔵 [**controle-acesso-gcp-infrastructure**](https://github.com/seu-usuario/controle-acesso-gcp-infrastructure)
+
+
 ## 🎥 Demonstração em vídeo
 
 📺 Vídeo do projeto em funcionamento:
 
-👉 [Assista no YouTube](#) <!-- Substitua o # pelo link real assim que disponível -->
+👉 [Assista no YouTube](https://youtu.be/-O7ABSnl1No) <!-- Substitua o # pelo link real assim que disponível -->
+
 
 ## 💼 Post no LinkedIn
 
 🔗 Publicação no LinkedIn com mais detalhes do projeto e bastidores do desenvolvimento:
 
 👉 [Postagem no LinkedIn](#) <!-- Substitua o # pelo link real assim que disponível -->
+
 
 ## 📌 Observações
 
